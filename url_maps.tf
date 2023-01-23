@@ -1,3 +1,10 @@
+locals {
+  default_service_id = local.is_global ? try(coalesce(
+     lookup(google_compute_backend_service.default, var.default_backend, null),
+     lookup(google_compute_backend_bucket.default, var.default_backend, null),
+  ).id, null) : null
+}
+
 # Global URL Map for HTTP
 resource "google_compute_url_map" "http" {
   count           = local.is_global ? 1 : 0
@@ -27,8 +34,7 @@ resource "google_compute_url_map" "https" {
   count           = local.is_global ? 1 : 0
   project         = var.project_id
   name            = "${local.name}-https"
-  default_service = google_compute_backend_service.default[var.default_backend].id
-  #default_service = google_compute_backend_bucket.default[var.default_backend].id
+  default_service = local.default_service_id
   dynamic "host_rule" {
     for_each = coalesce(var.routing_rules, {})
     content {
@@ -40,7 +46,7 @@ resource "google_compute_url_map" "https" {
     for_each = coalesce(var.routing_rules, {})
     content {
       name            = path_matcher.key
-      default_service = google_compute_backend_bucket.default["a-bucket"].id #path_matcher.value.backend
+      default_service = local.default_service_id
       dynamic "path_rule" {
         for_each = coalesce(path_matcher.value.path_rules, [])
         content {

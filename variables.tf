@@ -14,7 +14,7 @@ variable "name" {
 variable "classic" {
   description = "Create Classic Load Balancer (or instead use envoy-based platform)"
   type        = bool
-  default     = true
+  default     = false
 }
 variable "region" {
   description = "GCP Region Name (regional LB only)"
@@ -93,6 +93,7 @@ variable "backends" {
     bucket_name     = optional(string)
     container_name  = optional(string)
     container_image = optional(string)
+    docker_image    = optional(string)
     container_port  = optional(number)
     psc_target      = optional(string)
     fqdn            = optional(string)

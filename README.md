@@ -45,3 +45,14 @@ backends = {
 }
 default_backend = "cloud_run"
 ```
+#### 
+```
+
+backends = {
+  nginx-docker = {
+    container_name  = "nginx"
+    container_image = "docker.io/library/nginx"
+    region          = "us-east5"
+  }
+}
+```

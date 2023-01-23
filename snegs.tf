@@ -4,10 +4,15 @@ locals {
       type            = "sneg"
       name            = coalesce(v.container_name, k)
       region          = coalesce(v.region, local.region)
-      container_image = coalesce(v.container_image, "marketplace.gcr.io/google/${v.container_name}")
+      container_image = coalesce(v.container_image, "gcr.io/${var.project_id}/${v.container_name}")
       container_port  = coalesce(v.container_port, 80)
       psc_target      = v.psc_target
-    } if v.container_name != null || v.psc_target != null
+    } if v.container_name != null || v.container_image != null || v.psc_target != null
+  }
+  default_container = {
+    name            = "nginx1"
+    container_image = "marketplace.gcr.io/google/nginx1"
+    container_port  = 80
   }
 }
 
@@ -34,15 +39,15 @@ resource "google_cloud_run_service" "default" {
   }
 }
 
-/*
+#
 resource "google_cloud_run_service_iam_member" "default" {
-  for_each = local.backend_containers
-    project  = var.project_id
+  for_each = { for k, v in local.backend_snegs : k => v if v.container_image != null }
+  project  = var.project_id
   service  = google_cloud_run_service.default[each.key].name
   location = google_cloud_run_service.default[each.key].location
   role     = "roles/run.invoker"
   member   = "allUsers"
-} */
+}
 
 # Serverless Network Endpoint Group 
 resource "google_compute_region_network_endpoint_group" "default" {
