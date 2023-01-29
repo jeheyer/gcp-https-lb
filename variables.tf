@@ -66,7 +66,7 @@ variable "https_port" {
   default     = 443
 }
 variable "backend_timeout" {
-  description = "Default timeout for all backends (can be overridden)"
+  description = "Default timeout for all backends in seconds (can be overridden)"
   type        = number
   default     = 30
 }
@@ -87,22 +87,24 @@ variable "routing_rules" {
 }
 variable "backends" {
   type = map(object({
-    description     = optional(string)
-    region          = optional(string)
-    regions         = optional(list(string))
-    bucket_name     = optional(string)
-    container_name  = optional(string)
-    container_image = optional(string)
-    docker_image    = optional(string)
-    container_port  = optional(number)
-    psc_target      = optional(string)
-    fqdn            = optional(string)
-    ip_address      = optional(string)
-    port            = optional(number, 80)
-    enable_cdn      = optional(bool, false)
-    timeout         = optional(number, 30)
-    logging         = optional(bool, false)
-    logging_rate    = optional(number, 1.0)
+    description        = optional(string)
+    region             = optional(string)
+    regions            = optional(list(string))
+    bucket_name        = optional(string)
+    ig_ids             = optional(list(string))
+    container_name     = optional(string)
+    container_image    = optional(string)
+    container_location = optional(string)
+    docker_image       = optional(string)
+    container_port     = optional(number)
+    psc_target         = optional(string)
+    fqdn               = optional(string)
+    ip_address         = optional(string)
+    port               = optional(number)
+    enable_cdn         = optional(bool, false)
+    timeout            = optional(number, 30)
+    logging            = optional(bool, false)
+    logging_rate       = optional(number, 1.0)
   }))
   default = {}
 }

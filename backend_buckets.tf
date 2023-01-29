@@ -1,14 +1,3 @@
-locals {
-  # Generate a map of backends that are buckets
-  backend_buckets = { for k, v in var.backends : k =>
-    {
-      type        = "bucket"
-      bucket_name = v.bucket_name
-      description = v.description
-      enable_cdn  = coalesce(v.enable_cdn, false)
-    } if v.bucket_name != null
-  }
-}
 
 # Backend Buckets
 resource "google_compute_backend_bucket" "default" {

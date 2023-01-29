@@ -8,14 +8,14 @@ resource "google_compute_ssl_policy" "default" {
 }
 
 # Global HTTP Target Proxy
-resource "google_compute_target_http_proxy" "http" {
+resource "google_compute_target_http_proxy" "default" {
   count   = local.is_global ? 1 : 0
   project = var.project_id
   name    = "${local.name}-http"
   url_map = one(google_compute_url_map.http).id
 }
 # Regional HTTP Target Proxy
-resource "google_compute_region_target_http_proxy" "http" {
+resource "google_compute_region_target_http_proxy" "default" {
   count   = local.is_global ? 0 : 1
   project = var.project_id
   name    = "${local.name}-http"
@@ -24,7 +24,7 @@ resource "google_compute_region_target_http_proxy" "http" {
 }
 
 # Global HTTPS Target Proxy
-resource "google_compute_target_https_proxy" "https" {
+resource "google_compute_target_https_proxy" "default" {
   count            = local.is_global ? 1 : 0
   project          = var.project_id
   name             = "${local.name}-https"

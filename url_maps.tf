@@ -1,7 +1,8 @@
 locals {
   default_service_id = local.is_global ? try(coalesce(
-     lookup(google_compute_backend_service.default, var.default_backend, null),
-     lookup(google_compute_backend_bucket.default, var.default_backend, null),
+    # Try to match the default_backend value to a key on the backend resources
+    lookup(google_compute_backend_service.default, var.default_backend, null),
+    lookup(google_compute_backend_bucket.default, var.default_backend, null),
   ).id, null) : null
 }
 

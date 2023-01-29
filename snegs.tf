@@ -1,14 +1,4 @@
 locals {
-  backend_snegs = { for k, v in var.backends : k =>
-    {
-      type            = "sneg"
-      name            = coalesce(v.container_name, k)
-      region          = coalesce(v.region, local.region)
-      container_image = coalesce(v.container_image, "gcr.io/${var.project_id}/${v.container_name}")
-      container_port  = coalesce(v.container_port, 80)
-      psc_target      = v.psc_target
-    } if v.container_name != null || v.container_image != null || v.psc_target != null
-  }
   default_container = {
     name            = "nginx1"
     container_image = "marketplace.gcr.io/google/nginx1"
