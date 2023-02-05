@@ -9,11 +9,15 @@
 | project\_id | Project id of the project | `string` | 
 | name | Name of the load balancer | `string` |
 
-### Optional Inputs
+#### backends variable
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| description | Description for this resource | `string` | n/a |
+| Name | Description                                | Type | Default |
+|--|--------------------------------------------|------|---------|
+| description | Description for the Backend (Buckets Only) | `string` | n/a |
+| fqdn | FQDN Hostname (Internet NEGs only) | `string` | n/a |
+| ip_address | IP Address (Internet NEGs Only) | `string` | n/a |
+| port | TCP Port of the Backend | `number` | 443 |
+| protocol | Protocol of the Backend (HTTP or HTTPS) | `string` | "HTTPS" |
 
 ## Outputs
 
@@ -23,15 +27,29 @@
 
 ### Usage Examples
 
-#### Global Load Balancer with backend bucket, CDN Enabled for static files
+#### Global Load Balancer Mix of Cloud Run
 
 ```
 backends = {
+  cloud-run = {
+    docker_image   = "johnnylingo/flask2-sqlalchemy"
+    container_port = 8000
+  }
   static-bucket = {
     bucket_name = "my-static-bucket"
     enable_cdn  = true
   }
 }
+routing_rules = {
+  api = {
+    hosts = ["api.mydomain.com"]
+    backend = "cloud-run"
+  }
+  static-bucket = {
+    hosts   = ["static.mydomain.com", "*-static.mydomain.com"]
+  }
+}
+
 ```
 
 #### Global Load Balancer with a regional Cloud Run backend

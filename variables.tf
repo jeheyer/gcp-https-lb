@@ -5,7 +5,6 @@ variable "project_id" {
 variable "name" {
   description = "Name for this Load Balancer"
   type        = string
-  default     = null
   validation {
     condition     = var.name != null ? length(var.name) < 58 : true
     error_message = "Name cannot exceed 57 characters."
@@ -55,6 +54,34 @@ variable "default_service_id" {
   type    = string
   default = null
 }
+variable "network_name" {
+  type    = string
+  default = null
+}
+variable "subnet_name" {
+  type    = string
+  default = null
+}
+variable "network_project_id" {
+  type    = string
+  default = null
+}
+variable "type" {
+  type    = string
+  default = null
+}
+variable "port_range" {
+  type    = string
+  default = null
+}
+variable "ports" {
+  type    = list(number)
+  default = null
+}
+variable "all_ports" {
+  type    = bool
+  default = false
+}
 variable "http_port" {
   description = "HTTP port for LB Frontend"
   type        = number
@@ -65,16 +92,22 @@ variable "https_port" {
   type        = number
   default     = 443
 }
+variable "allow_global_access" {
+  type    = bool
+  default = false
+}
 variable "backend_timeout" {
   description = "Default timeout for all backends in seconds (can be overridden)"
   type        = number
   default     = 30
 }
 variable "default_backend" {
-  type    = string
-  default = null
+  description = "Default backend"
+  type        = string
+  default     = null
 }
 variable "routing_rules" {
+  description = "Route rules to send different hostnames/paths to different backends"
   type = map(object({
     hosts   = list(string)
     backend = optional(string)
@@ -86,25 +119,37 @@ variable "routing_rules" {
   default = {}
 }
 variable "backends" {
+  description = "Map of all backend services & buckets"
   type = map(object({
-    description        = optional(string)
-    region             = optional(string)
-    regions            = optional(list(string))
-    bucket_name        = optional(string)
-    ig_ids             = optional(list(string))
-    container_name     = optional(string)
-    container_image    = optional(string)
-    container_location = optional(string)
-    docker_image       = optional(string)
-    container_port     = optional(number)
-    psc_target         = optional(string)
-    fqdn               = optional(string)
-    ip_address         = optional(string)
-    port               = optional(number)
-    enable_cdn         = optional(bool, false)
-    timeout            = optional(number, 30)
-    logging            = optional(bool, false)
-    logging_rate       = optional(number, 1.0)
+    type                  = optional(string) # We'll try and figure it out automatically
+    description           = optional(string)
+    region                = optional(string)
+    regions               = optional(list(string)) # For deploying serverless to multiple regions
+    bucket_name           = optional(string)
+    ig_ids                = optional(list(string))
+    healthcheck           = optional(string)
+    healthcheck_id        = optional(string)
+    healthcheck_name      = optional(string)
+    cloud_run_name        = optional(string) # Cloud run service name
+    container_image       = optional(string) # Default to GCR if not full URL
+    docker_image          = optional(string) # Pulls image from docker.io
+    container_port        = optional(number)
+    psc_target            = optional(string)
+    fqdn                  = optional(string)
+    ip_address            = optional(string)
+    port                  = optional(number)
+    protocol              = optional(string)
+    enable_cdn            = optional(bool)
+    cdn_cache_mode        = optional(string)
+    timeout               = optional(number)
+    logging               = optional(bool)
+    logging_rate          = optional(number)
+    affinity_type         = optional(string)
+    cloudarmor_policy     = optional(string)
+    capacity_scaler       = optional(number)
+    max_utilization       = optional(number)
+    max_rate_per_instance = optional(number)
+    max_connections       = optional(number)
   }))
   default = {}
 }
