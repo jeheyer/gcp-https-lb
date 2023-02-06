@@ -9,7 +9,7 @@ locals {
       { type = "igs" } # assume instance groups
     ).type
     description  = coalesce(v.description, "Backend Service")
-    protocol     = lookup(local.snegs, k, null) != null ? null : local.type #upper(coalesce(var.type, coalesce(v.protocol, v.port == 80 ? "http" : "https")))
+    protocol     = lookup(local.snegs, k, null) != null ? null : local.type
     timeout      = lookup(local.snegs, k, null) != null ? null : coalesce(v.timeout, var.backend_timeout, 30)
     logging      = coalesce(v.logging, false)
     logging_rate = coalesce(v.logging, false) ? coalesce(v.logging_rate, 1.0) : null
@@ -36,7 +36,7 @@ locals {
 resource "google_compute_backend_service" "default" {
   for_each              = local.is_global ? local.backend_services : {}
   project               = var.project_id
-  name                  = "${local.name}-${each.key}"
+  name                  = "${local.name_prefix}-${each.key}"
   load_balancing_scheme = local.lb_scheme
   locality_lb_policy    = local.locality_lb_policy
   protocol              = each.value.protocol
@@ -68,7 +68,7 @@ resource "google_compute_backend_service" "default" {
 resource "google_compute_region_backend_service" "default" {
   for_each              = local.is_global ? {} : local.backend_services
   project               = var.project_id
-  name                  = "${local.name}-${each.key}"
+  name                  = "${local.name_prefix}-${each.key}"
   load_balancing_scheme = local.lb_scheme
   locality_lb_policy    = local.locality_lb_policy
   description           = each.value.description

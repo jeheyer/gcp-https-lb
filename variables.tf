@@ -2,12 +2,22 @@ variable "project_id" {
   description = "GCP Project ID"
   type        = string
 }
-variable "name" {
-  description = "Name for this Load Balancer"
+variable "name_prefix" {
+  description = "Name Prefix for this Load Balancer"
   type        = string
+  default     = null
   validation {
-    condition     = var.name != null ? length(var.name) < 58 : true
-    error_message = "Name cannot exceed 57 characters."
+    condition     = var.name_prefix != null ? length(var.name_prefix) < 50 : true
+    error_message = "Name Prefix cannot exceed 49 characters."
+  }
+}
+variable "description" {
+  description = "Description for this Load Balancer"
+  type        = string
+  default     = null
+  validation {
+    condition     = var.description != null ? length(var.description) < 256 : true
+    error_message = "Description cannot exceed 255 characters."
   }
 }
 variable "classic" {
@@ -35,10 +45,33 @@ variable "min_tls_version" {
   type        = string
   default     = "TLS_1_2"
 }
-variable "ssl_certificates" {
+variable "ssl_certs" {
   description = "Map of SSL Certificates to upload to Google Certificate Manager"
-  type        = map(object({ certificate = string, private_key = string }))
-  default     = {}
+  type = map(object({
+    certificate = string
+    private_key = string
+    description = optional(string)
+  }))
+  default = null
+}
+variable "ssl_cert_names" {
+  description = "List of existing SSL certificates to apply to this load balancer frontend"
+  type        = list(string)
+  default     = null
+}
+variable "use_gmc" {
+  description = "Use Google-Managed Certs"
+  type        = bool
+  default     = false
+}
+variable "use_ssc" {
+  description = "Use Self-Signed Certs"
+  type        = bool
+  default     = null
+}
+variable "domains" {
+  type    = list(string)
+  default = null
 }
 variable "key_algorithm" {
   description = "For self-signed cert, the Algorithm for the Private Key"
@@ -70,6 +103,14 @@ variable "type" {
   type    = string
   default = null
 }
+variable "use_ipv4" {
+  type    = bool
+  default = true
+}
+variable "use_ipv6" {
+  type    = bool
+  default = false
+}
 variable "port_range" {
   type    = string
   default = null
@@ -92,7 +133,7 @@ variable "https_port" {
   type        = number
   default     = 443
 }
-variable "allow_global_access" {
+variable "global_access" {
   type    = bool
   default = false
 }

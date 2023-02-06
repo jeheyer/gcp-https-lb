@@ -11,7 +11,7 @@ locals {
 resource "google_compute_backend_bucket" "default" {
   for_each    = local.backend_buckets
   project     = var.project_id
-  name        = "${local.name}-${each.value.bucket_name}"
+  name        = "${local.name_prefix}-${each.value.bucket_name}"
   bucket_name = each.value.bucket_name
   description = each.value.description
   enable_cdn  = each.value.enable_cdn

@@ -35,15 +35,16 @@ resource "google_cloud_run_service" "default" {
   }
 }
 
-/*
+#
 resource "google_cloud_run_service_iam_member" "default" {
-  for_each = { for k, v in local.backend_snegs : k => v if v.image != null }
+  for_each = { for k, v in local.snegs : k => v if v.image != null }
   project  = var.project_id
   service  = google_cloud_run_service.default[each.key].name
   location = google_cloud_run_service.default[each.key].location
   role     = "roles/run.invoker"
   member   = "allUsers"
-} */
+}
+# */
 
 # Serverless Network Endpoint Group 
 resource "google_compute_region_network_endpoint_group" "default" {

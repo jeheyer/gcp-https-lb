@@ -3,7 +3,7 @@ locals {
     type       = "ineg"
     fqdn       = v.fqdn
     ip_address = v.ip_address
-    port       = coalesce(v.port, 443) # let's default to HTTPS since this is going via Internet
+    port       = coalesce(v.port, 443) # default to HTTPS since this is going via Internet
   } if try(coalesce(v.fqdn, v.ip_address), null) != null }
 }
 

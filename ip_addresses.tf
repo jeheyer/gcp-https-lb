@@ -1,14 +1,15 @@
 locals {
+  ip_versions  = local.is_global ? concat(var.use_ipv4 ? ["IPV4"] : [], var.use_ipv6 ? ["IPV6"] : []) : ["IPV4"]
   address_type = local.is_internal ? "INTERNAL" : "EXTERNAL"
 }
 
 # Global static IP
 resource "google_compute_global_address" "default" {
-  count        = local.is_global ? 1 : 0
+  for_each     = local.is_global ? { for i, v in local.ip_versions : lower(v) => upper(v) } : {}
   project      = var.project_id
-  name         = "${local.name}-${local.is_internal ? "ilb" : "elb"}"
+  name         = "${local.name_prefix}-${each.key}-${local.is_internal ? "ilb" : "elb"}"
   address_type = local.address_type
-  ip_version   = "IPV4"
+  ip_version   = each.value
 }
 
 # Locals for regional and/or internal LBs
@@ -25,9 +26,9 @@ locals {
 
 # Regional static IP
 resource "google_compute_address" "default" {
-  count        = local.is_global ? 0 : 1
+  for_each     = local.is_regional ? { for i, v in local.ip_versions : lower(v) => upper(v) } : {}
   project      = var.project_id
-  name         = "${local.name}-${local.is_internal ? "ilb" : "elb"}"
+  name         = "${local.name_prefix}-${local.is_internal ? "ilb" : "elb"}-${each.key}"
   address_type = local.address_type
   region       = local.region
   subnetwork   = local.subnetwork

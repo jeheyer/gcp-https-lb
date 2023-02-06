@@ -1,10 +1,18 @@
 output "address" {
-  value = local.is_global ? one(google_compute_global_address.default).address : one(google_compute_address.default).address
+  value = local.is_global && var.use_ipv4 ? google_compute_global_address.default["ipv4"].address : null
+  #one(google_compute_address.default).address
+}
+output "ipv4_address" {
+  value = local.is_global && var.use_ipv4 ? google_compute_global_address.default["ipv4"].address : null
+  #one(google_compute_address.default).address
+}
+output "ipv6_address" {
+  value = local.is_global && var.use_ipv6 ? google_compute_global_address.default["ipv6"].address : null
 }
 output "backends" {
   value = { for k, v in merge(local.backend_services, local.backend_buckets) : k => v.type }
 }
-output "name" { value = local.name }
+output "name" { value = local.name_prefix }
 output "type" { value = local.type }
 output "is_global" { value = local.is_global }
 output "is_regional" { value = local.is_regional }
